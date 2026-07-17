@@ -1,4 +1,4 @@
-import { Clock } from "lucide-react";
+import { CheckCircle2, Circle, Clock } from "lucide-react";
 import { CalendarActions, BulkCalendarDownload } from "./CalendarActions";
 import { formatDisplayDate } from "@/lib/dateUtils";
 import type { AssignmentItem } from "@/lib/types";
@@ -9,7 +9,7 @@ function getScheduleLabel(assignment: AssignmentItem) {
   return "All-day";
 }
 
-export function AssignmentSchedule({ assignments }: { assignments: AssignmentItem[] }) {
+export function AssignmentSchedule({ assignments, onToggleComplete }: { assignments: AssignmentItem[]; onToggleComplete?: (id: string) => void }) {
   const sortedAssignments = [...assignments].sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title));
 
   return (
@@ -27,7 +27,7 @@ export function AssignmentSchedule({ assignments }: { assignments: AssignmentIte
 
       <div className="mt-5 space-y-3">
         {sortedAssignments.map((assignment) => (
-          <article key={assignment.id} className="grid gap-3 rounded-lg bg-paper p-3 sm:grid-cols-[auto_1fr_auto] sm:items-center">
+          <article key={assignment.id} className={`grid gap-3 rounded-lg p-3 sm:grid-cols-[auto_1fr_auto] sm:items-center ${assignment.completed ? "bg-mint/60" : "bg-paper"}`}>
             <div className="min-w-[112px]">
               <p className="text-sm font-bold text-ink">{formatDisplayDate(assignment.date)}</p>
               <p className="mt-1 inline-flex items-center gap-1.5 text-xs font-semibold text-ink/50">
@@ -37,7 +37,10 @@ export function AssignmentSchedule({ assignments }: { assignments: AssignmentIte
             </div>
 
             <div className="min-w-0">
-              <p className="font-semibold text-ink">{assignment.title}</p>
+              <button type="button" onClick={() => onToggleComplete?.(assignment.id)} className="flex items-center gap-2 text-left font-semibold text-ink" aria-label={`Mark ${assignment.title} ${assignment.completed ? "incomplete" : "complete"}`}>
+                {assignment.completed ? <CheckCircle2 size={19} className="text-moss" /> : <Circle size={19} className="text-ink/30" />}
+                <span className={assignment.completed ? "line-through opacity-60" : ""}>{assignment.title}</span>
+              </button>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2 py-1 text-xs font-semibold text-ink/60">
                   <span
@@ -55,6 +58,7 @@ export function AssignmentSchedule({ assignments }: { assignments: AssignmentIte
                     {assignment.gradeWeight}%
                   </span>
                 ) : null}
+                <span className="rounded-full bg-white px-2 py-1 text-xs font-bold text-ink/60">{assignment.effortHours}h effort</span>
               </div>
             </div>
 

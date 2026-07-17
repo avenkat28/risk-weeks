@@ -4,6 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AlertOctagon, CalendarDays, Gauge, ListChecks, ShieldCheck, Sparkles } from "lucide-react";
 import { AssignmentEditor } from "@/components/AssignmentEditor";
+import { CommitmentManager } from "@/components/CommitmentManager";
+import { MonthlyCalendar } from "@/components/MonthlyCalendar";
+import { StudyPlan } from "@/components/StudyPlan";
 import { AssignmentSchedule } from "@/components/AssignmentSchedule";
 import { DangerWeekCard } from "@/components/DangerWeekCard";
 import { EmptyState } from "@/components/EmptyState";
@@ -14,18 +17,20 @@ import { SummaryCard } from "@/components/SummaryCard";
 import { WeekRiskCard } from "@/components/WeekRiskCard";
 import { rebuildAnalysis } from "@/lib/analysis";
 import { formatWeekRange } from "@/lib/dateUtils";
-import { loadAnalysis, saveAnalysis } from "@/lib/storage";
-import type { AssignmentItem, SyllabusAnalysis } from "@/lib/types";
+import { loadAnalysis, loadCommitments, saveAnalysis, saveCommitments } from "@/lib/storage";
+import type { AssignmentItem, PersonalCommitment, SyllabusAnalysis } from "@/lib/types";
 
 export default function DashboardPage() {
   const [analysis, setAnalysis] = useState<SyllabusAnalysis | null>(null);
   const [draftAssignments, setDraftAssignments] = useState<AssignmentItem[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [commitments, setCommitments] = useState<PersonalCommitment[]>([]);
 
   useEffect(() => {
     const savedAnalysis = loadAnalysis();
     setAnalysis(savedAnalysis);
     setDraftAssignments(savedAnalysis?.assignments ?? []);
+    setCommitments(loadCommitments());
     setLoaded(true);
   }, []);
 
@@ -68,6 +73,20 @@ export default function DashboardPage() {
     setAnalysis(nextAnalysis);
     setDraftAssignments(nextAnalysis.assignments);
     saveAnalysis(nextAnalysis);
+  }
+
+  function handleCommitmentsChange(next: PersonalCommitment[]) {
+    setCommitments(next);
+    saveCommitments(next);
+  }
+
+  function handleToggleComplete(id: string) {
+    if (!analysis) return;
+    const nextAssignments = analysis.assignments.map(item => item.id === id ? { ...item, completed: !item.completed } : item);
+    const next = rebuildAnalysis(analysis, nextAssignments);
+    setAnalysis(next);
+    setDraftAssignments(next.assignments);
+    saveAnalysis(next);
   }
 
   return (
@@ -144,9 +163,15 @@ export default function DashboardPage() {
           />
         </div>
 
+        <div className="mt-8"><CommitmentManager commitments={commitments} onChange={handleCommitmentsChange} /></div>
+
+        <div className="mt-8"><StudyPlan assignments={analysis.assignments} commitments={commitments} /></div>
+
+        <div className="mt-8"><MonthlyCalendar assignments={analysis.assignments} commitments={commitments} /></div>
+
         {analysis.assignments.length > 0 ? (
           <div className="mt-8">
-            <AssignmentSchedule assignments={analysis.assignments} />
+            <AssignmentSchedule assignments={analysis.assignments} onToggleComplete={handleToggleComplete} />
           </div>
         ) : null}
 

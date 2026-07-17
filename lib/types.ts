@@ -45,7 +45,20 @@ export type AssignmentItem = {
   weekStart: string;
   riskPoints: number;
   gradeWeight: number | null;
+  effortHours: number;
+  completed: boolean;
   sourceText: string;
+};
+
+export type CommitmentType = "appointment" | "work" | "club" | "interview" | "trip" | "party" | "other";
+
+export type PersonalCommitment = {
+  id: string;
+  title: string;
+  type: CommitmentType;
+  date: string;
+  startTime: string;
+  endTime: string;
 };
 
 export type CourseSyllabus = {

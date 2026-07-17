@@ -58,6 +58,8 @@ function createBlankAssignment(course: CourseSyllabus | undefined): AssignmentIt
     weekStart: localDate,
     riskPoints: 0,
     gradeWeight: null,
+    effortHours: 3,
+    completed: false,
     sourceText: "Manually added deadline",
   };
 }
@@ -127,7 +129,7 @@ export function AssignmentEditor({ assignments, courses, onAssignmentsChange, on
         <div className="mt-5 space-y-3">
           {assignments.map((assignment) => (
             <div key={assignment.id} className="rounded-lg border border-ink/10 bg-paper p-3">
-              <div className="grid gap-3 lg:grid-cols-[1.2fr_0.8fr_0.72fr_0.62fr_0.5fr_0.52fr_auto]">
+              <div className="grid gap-3 lg:grid-cols-[1.2fr_0.8fr_0.72fr_0.62fr_0.5fr_0.48fr_0.52fr_auto]">
                 <label>
                   <span className="text-xs font-semibold uppercase text-ink/50">Title</span>
                   <input
@@ -214,6 +216,22 @@ export function AssignmentEditor({ assignments, courses, onAssignmentsChange, on
                     }
                     className="mt-1 w-full rounded-lg border border-ink/15 bg-white px-3 py-2 text-sm outline-none transition focus:border-moss"
                   />
+                </label>
+
+                <label>
+                  <span className="text-xs font-semibold uppercase text-ink/50">Effort</span>
+                  <div className="relative mt-1">
+                    <input
+                      type="number"
+                      min="0.5"
+                      max="100"
+                      step="0.5"
+                      value={assignment.effortHours}
+                      onChange={(event) => updateAssignment(assignment.id, { effortHours: Number(event.target.value) })}
+                      className="w-full rounded-lg border border-ink/15 bg-white px-3 py-2 pr-7 text-sm outline-none transition focus:border-moss"
+                    />
+                    <span className="absolute right-2 top-2 text-sm text-ink/40">h</span>
+                  </div>
                 </label>
 
                 <button

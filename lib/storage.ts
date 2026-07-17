@@ -1,8 +1,9 @@
-import type { SyllabusAnalysis } from "./types";
+import type { PersonalCommitment, SyllabusAnalysis } from "./types";
 import { buildPrepRecommendations } from "./riskScoring";
 
 export const analysisStorageKey = "riskweeks.analysis.v2";
 const legacyAnalysisStorageKey = "riskweeks.analysis.v1";
+const commitmentsStorageKey = "riskweeks.commitments.v1";
 
 export function saveAnalysis(analysis: SyllabusAnalysis) {
   window.localStorage.setItem(analysisStorageKey, JSON.stringify(analysis));
@@ -14,7 +15,21 @@ function withCalendarDefaults<T extends Record<string, unknown>>(assignment: T) 
     timeStatus: assignment.timeStatus || "all-day",
     startTime: assignment.startTime || null,
     endTime: assignment.endTime || null,
+    effortHours: typeof assignment.effortHours === "number" ? assignment.effortHours : 3,
+    completed: assignment.completed === true,
   };
+}
+
+export function saveCommitments(commitments: PersonalCommitment[]) {
+  window.localStorage.setItem(commitmentsStorageKey, JSON.stringify(commitments));
+}
+
+export function loadCommitments(): PersonalCommitment[] {
+  try {
+    return JSON.parse(window.localStorage.getItem(commitmentsStorageKey) || "[]") as PersonalCommitment[];
+  } catch {
+    return [];
+  }
 }
 
 export function loadAnalysis(): SyllabusAnalysis | null {

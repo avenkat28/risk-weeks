@@ -442,6 +442,8 @@ export function parseSyllabus(text: string, options: ParseOptions = {}): Syllabu
       weekStart: toISODate(weekStart),
       riskPoints,
       gradeWeight,
+      effortHours: Math.max(1, Math.round(riskPoints * 0.75)),
+      completed: false,
       sourceText: line,
     };
 
