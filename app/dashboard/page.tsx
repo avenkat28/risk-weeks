@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { AlertOctagon, CalendarDays, Gauge, ListChecks, ShieldCheck, Sparkles } from "lucide-react";
+import { AlertOctagon, BookOpen, CalendarDays, CheckSquare2, Clock3, Gauge, ListChecks, ShieldCheck, Sparkles, Users } from "lucide-react";
 import { AssignmentEditor } from "@/components/AssignmentEditor";
 import { CommitmentManager } from "@/components/CommitmentManager";
 import { MonthlyCalendar } from "@/components/MonthlyCalendar";
@@ -118,7 +118,24 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <section className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <nav aria-label="Dashboard sections" className="sticky top-3 z-20 mt-5 overflow-x-auto rounded-xl border border-ink/10 bg-white/95 p-2 shadow-soft backdrop-blur">
+          <div className="flex min-w-max items-center gap-1">
+            {[
+              { href: "#overview", label: "Overview", icon: Gauge },
+              { href: "#tasks", label: "Tasks", icon: CheckSquare2 },
+              { href: "#commitments", label: "Commitments", icon: Users },
+              { href: "#study-plan", label: "Study plan", icon: BookOpen },
+              { href: "#calendar", label: "Calendar", icon: CalendarDays },
+              { href: "#effort", label: "Effort", icon: Clock3 },
+            ].map((item) => (
+              <a key={item.href} href={item.href} className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-ink/65 transition hover:bg-mint hover:text-moss">
+                <item.icon size={16} aria-hidden="true" />{item.label}
+              </a>
+            ))}
+          </div>
+        </nav>
+
+        <section id="overview" className="mt-7 scroll-mt-24 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <SummaryCard icon={ListChecks} label="Total Deadlines" value={analysis.assignments.length} />
           <SummaryCard icon={Gauge} label="High-Risk Weeks" value={highRiskWeeks} tone="danger" />
           <SummaryCard icon={AlertOctagon} label="Critical Weeks" value={criticalWeeks} tone="critical" />
@@ -154,7 +171,7 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <div className="mt-8">
+        <div id="effort" className="mt-8 scroll-mt-24">
           <AssignmentEditor
             assignments={draftAssignments}
             courses={analysis.courses}
@@ -163,14 +180,14 @@ export default function DashboardPage() {
           />
         </div>
 
-        <div className="mt-8"><CommitmentManager commitments={commitments} onChange={handleCommitmentsChange} /></div>
+        <div id="commitments" className="mt-8 scroll-mt-24"><CommitmentManager commitments={commitments} onChange={handleCommitmentsChange} /></div>
 
-        <div className="mt-8"><StudyPlan assignments={analysis.assignments} commitments={commitments} /></div>
+        <div id="study-plan" className="mt-8 scroll-mt-24"><StudyPlan assignments={analysis.assignments} commitments={commitments} /></div>
 
-        <div className="mt-8"><MonthlyCalendar assignments={analysis.assignments} commitments={commitments} /></div>
+        <div id="calendar" className="mt-8 scroll-mt-24"><MonthlyCalendar assignments={analysis.assignments} commitments={commitments} /></div>
 
         {analysis.assignments.length > 0 ? (
-          <div className="mt-8">
+          <div id="tasks" className="mt-8 scroll-mt-24">
             <AssignmentSchedule assignments={analysis.assignments} onToggleComplete={handleToggleComplete} />
           </div>
         ) : null}
