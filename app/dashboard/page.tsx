@@ -14,7 +14,6 @@ import { GradeImpactTable } from "@/components/GradeImpactTable";
 import { Header } from "@/components/Header";
 import { PrepPlan } from "@/components/PrepPlan";
 import { SummaryCard } from "@/components/SummaryCard";
-import { WeekRiskCard } from "@/components/WeekRiskCard";
 import { rebuildAnalysis } from "@/lib/analysis";
 import { formatWeekRange } from "@/lib/dateUtils";
 import { loadAnalysis, loadCommitments, saveAnalysis, saveCommitments } from "@/lib/storage";
@@ -198,7 +197,7 @@ export default function DashboardPage() {
 
         <div id="commitments" className="mt-8 scroll-mt-24"><CommitmentManager commitments={commitments} onChange={handleCommitmentsChange} /></div>
 
-        <div id="study-plan" className="mt-8 scroll-mt-24"><StudyPlan assignments={analysis.assignments} commitments={commitments} /></div>
+        <div id="study-plan" className="mt-8 scroll-mt-24"><StudyPlan assignments={analysis.assignments} commitments={commitments} riskWeeks={analysis.weeks} /></div>
 
         <div id="calendar" className="mt-8 scroll-mt-24"><MonthlyCalendar assignments={analysis.assignments} commitments={commitments} /></div>
 
@@ -207,28 +206,6 @@ export default function DashboardPage() {
             <AssignmentSchedule assignments={analysis.assignments} onToggleComplete={handleToggleComplete} />
           </div>
         ) : null}
-
-        <section className="mt-10">
-          <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2 className="text-2xl font-bold text-ink">Your semester at a glance</h2>
-              <p className="mt-1 text-sm text-ink/60">Scan weekly workload, risk level, and the deadlines inside each week.</p>
-            </div>
-          </div>
-          {analysis.weeks.length > 0 ? (
-            <div className="grid gap-4 lg:grid-cols-2">
-              {analysis.weeks.map((week) => (
-                <WeekRiskCard key={week.weekStart} week={week} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState
-              title="No assignments found"
-              message="RiskWeeks needs dated lines to build the map. Try schedule text with formats like 2/15, February 15, Due: March 3, or Exam: April 20."
-              icon={CalendarDays}
-            />
-          )}
-        </section>
 
         <section className="mt-10 grid gap-8 lg:grid-cols-[1fr_0.95fr]">
           <div>
