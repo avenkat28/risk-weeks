@@ -75,6 +75,22 @@ export default function DashboardPage() {
     saveAnalysis(nextAnalysis);
   }
 
+  function handleAssignmentsChange(nextAssignments: AssignmentItem[]) {
+    setDraftAssignments(nextAssignments);
+
+    // Keep every dashboard view in sync as soon as an editable deadline is valid.
+    // Invalid in-progress dates stay in the editor until the user finishes typing.
+    const datesAreValid = nextAssignments.every((item) => {
+      const parsed = new Date(`${item.date}T12:00:00`);
+      return /^\d{4}-\d{2}-\d{2}$/.test(item.date) && !Number.isNaN(parsed.getTime());
+    });
+    if (!analysis || !datesAreValid) return;
+
+    const nextAnalysis = rebuildAnalysis(analysis, nextAssignments);
+    setAnalysis(nextAnalysis);
+    saveAnalysis(nextAnalysis);
+  }
+
   function handleCommitmentsChange(next: PersonalCommitment[]) {
     setCommitments(next);
     saveCommitments(next);
@@ -175,7 +191,7 @@ export default function DashboardPage() {
           <AssignmentEditor
             assignments={draftAssignments}
             courses={analysis.courses}
-            onAssignmentsChange={setDraftAssignments}
+            onAssignmentsChange={handleAssignmentsChange}
             onRecalculate={handleRecalculate}
           />
         </div>

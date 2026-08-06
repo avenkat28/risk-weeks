@@ -96,7 +96,7 @@ export function AssignmentEditor({ assignments, courses, onAssignmentsChange, on
         <div>
           <h2 className="text-2xl font-bold text-ink">Review Extracted Deadlines</h2>
           <p className="mt-2 text-sm leading-6 text-ink/60">
-            Review your extracted deadlines. You can edit anything RiskWeeks got wrong.
+            Review your deadlines. Changes are saved and reflected on the calendar automatically.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
